@@ -1,19 +1,27 @@
 package com.lvonce.interceptor;
 
+import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.lvonce.core.model.base.ApiResult;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.builder.StaticSqlSource;
 import org.apache.ibatis.mapping.*;
+import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
+import org.apache.ibatis.scripting.xmltags.DynamicSqlSource;
+import org.apache.ibatis.scripting.xmltags.XMLLanguageDriver;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -25,12 +33,13 @@ public class SqlTemplateService {
 
     private DataSource dataSource;
 
-    public String executeSqlFromTemplate(String template, Object parameters) {
+    public String executeSqlFromTemplate(String template, Map<String, Object> parameters) {
 
         // 创建 SqlSource
         Configuration configuration = sqlSessionFactory.getConfiguration();
-        SqlSource sqlSource = new StaticSqlSource(configuration, template);
+        LanguageDriver languageDriver = configuration.getLanguageDriver(XMLLanguageDriver.class);
 
+        SqlSource sqlSource = languageDriver.createSqlSource(configuration, template, Map.class);
         // 创建 BoundSql
         BoundSql boundSql = sqlSource.getBoundSql(parameters);
 
@@ -52,7 +61,9 @@ public class SqlTemplateService {
             PreparedStatement ps = connection.prepareStatement(boundSql.getSql());
             parameterHandler.setParameters(ps);
             ResultSet resultSet = ps.executeQuery();
-            return convertResultSetToJson(resultSet);
+            String jsonResult = convertResultSetToJson(resultSet);
+            log.info("json result: {}", jsonResult);
+            return jsonResult;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to build SQL from template", e);
         } finally {
@@ -67,22 +78,24 @@ public class SqlTemplateService {
     }
 
     public static String convertResultSetToJson(ResultSet resultSet) throws SQLException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ArrayNode resultArray = objectMapper.createArrayNode();
-
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        ArrayNode resultArray = objectMapper.createArrayNode();
+        ArrayList<Map<String, Object>> values = new ArrayList<>();
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
 
         while (resultSet.next()) {
-            ObjectNode rowNode = objectMapper.createObjectNode();
+//            ObjectNode rowNode = objectMapper.createObjectNode();
+            Map<String, Object> valueMap = new HashMap<>();
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = metaData.getColumnName(i);
                 Object columnValue = resultSet.getObject(i);
-                rowNode.put(columnName, columnValue.toString());
+//                rowNode.put(columnName, columnValue.toString());
+                valueMap.put(columnName, columnValue);
             }
-            resultArray.add(rowNode);
+            values.add(valueMap);
         }
-
-        return resultArray.toString();
+        ApiResult<ArrayList<Map<String, Object>>> apiResult = ApiResult.ofSuccess(values);
+        return JSONUtil.toJsonStr(apiResult);
     }
 }

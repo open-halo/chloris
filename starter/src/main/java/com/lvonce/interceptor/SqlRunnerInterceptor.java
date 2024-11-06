@@ -1,5 +1,6 @@
 package com.lvonce.interceptor;
 
+import cn.hutool.json.JSONUtil;
 import com.lvonce.core.model.Endpoint;
 import com.lvonce.core.model.base.ApiResult;
 import com.lvonce.core.service.impl.EndpointService;
@@ -31,7 +32,7 @@ public class SqlRunnerInterceptor implements HandlerInterceptor {
 
             // 获取所有查询参数
             Map<String, String[]> parameterMap = request.getParameterMap();
-            Map<String, String> queryParameters = parameterMap.entrySet().stream()
+            Map<String, Object> queryParameters = parameterMap.entrySet().stream()
                     .collect(Collectors.toMap(
                             Map.Entry::getKey,
                             entry -> String.join(",", entry.getValue())
@@ -42,15 +43,11 @@ public class SqlRunnerInterceptor implements HandlerInterceptor {
             Endpoint endpoint = endpointResult.unwrap();
             log.info("endpoint: {}", endpoint);
 
-            sqlTemplateService.executeSqlFromTemplate(endpoint.getSqlTemplate(), queryParameters);
-
-
-
-            // 返回 "hello" 并中断请求
+            String apiJsonResult = sqlTemplateService.executeSqlFromTemplate(endpoint.getSqlTemplate(), queryParameters);
             response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("text/plain");
+            response.setContentType("application/json");
             PrintWriter writer = response.getWriter();
-            writer.print("hello");
+            writer.print(apiJsonResult);
             writer.flush();
             writer.close();
             return false;
