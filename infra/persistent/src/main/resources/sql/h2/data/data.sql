@@ -1,4 +1,4 @@
-INSERT INTO `endpoint` (id, http_method, http_url, sql_template) VALUES (1, 'GET', '/api/data_v1', 'select id, name from `author` where `id` = #{id}');
+INSERT INTO `endpoint` (id, http_method, http_url, sql_template) VALUES (1, 'GET', '/api/data_v1', 'select * from `author` where `id` = #{id}');
 INSERT INTO `endpoint` (id, http_method, http_url, sql_template) VALUES (2, 'GET', '/api/data_v2', 'select email from `author` where `name` = #{name}');
 
 
