@@ -13,8 +13,7 @@ public class InterceptorRegister implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(runnerInterceptor)
-                .addPathPatterns("/api/**"); // 拦截所有 /api 下的请求
-//                .excludePathPatterns("/api/exclude"); // 排除某些路径
+        registry.addInterceptor(runnerInterceptor).addPathPatterns("/api/**"); // 拦截所有 /api 下的请求
+        //                .excludePathPatterns("/api/exclude"); // 排除某些路径
     }
 }

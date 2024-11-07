@@ -10,7 +10,6 @@ public class Endpoint {
     @Id
     private Long   id;
 
-
     private String httpMethod;
 
     private String httpUrl;

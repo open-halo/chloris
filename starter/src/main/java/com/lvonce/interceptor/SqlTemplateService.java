@@ -28,10 +28,10 @@ import java.util.Map;
 @AllArgsConstructor
 public class SqlTemplateService {
 
-//    private Configuration mybatisConfiguration;
+    //    private Configuration mybatisConfiguration;
     private SqlSessionFactory sqlSessionFactory;
 
-    private DataSource dataSource;
+    private DataSource        dataSource;
 
     public String executeSqlFromTemplate(String template, Map<String, Object> parameters) {
 
@@ -44,16 +44,13 @@ public class SqlTemplateService {
         BoundSql boundSql = sqlSource.getBoundSql(parameters);
 
         String statementId = "com.lvonce.interceptor.SqlTemplateService.generic";
-        MappedStatement.Builder statementBuilder = new MappedStatement.Builder(
-                configuration,
-                statementId,
-                sqlSource,
-                SqlCommandType.SELECT
-        );
+        MappedStatement.Builder statementBuilder = new MappedStatement.Builder(configuration,
+            statementId, sqlSource, SqlCommandType.SELECT);
         MappedStatement mappedStatement = statementBuilder.build();
 
         // 创建 ParameterHandler
-        DefaultParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement, parameters, boundSql);
+        DefaultParameterHandler parameterHandler = new DefaultParameterHandler(mappedStatement,
+            parameters, boundSql);
 
         Connection connection = null;
         try {
@@ -78,19 +75,19 @@ public class SqlTemplateService {
     }
 
     public static String convertResultSetToJson(ResultSet resultSet) throws SQLException {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        ArrayNode resultArray = objectMapper.createArrayNode();
+        //        ObjectMapper objectMapper = new ObjectMapper();
+        //        ArrayNode resultArray = objectMapper.createArrayNode();
         ArrayList<Map<String, Object>> values = new ArrayList<>();
         ResultSetMetaData metaData = resultSet.getMetaData();
         int columnCount = metaData.getColumnCount();
 
         while (resultSet.next()) {
-//            ObjectNode rowNode = objectMapper.createObjectNode();
+            //            ObjectNode rowNode = objectMapper.createObjectNode();
             Map<String, Object> valueMap = new HashMap<>();
             for (int i = 1; i <= columnCount; i++) {
                 String columnName = metaData.getColumnName(i);
                 Object columnValue = resultSet.getObject(i);
-//                rowNode.put(columnName, columnValue.toString());
+                //                rowNode.put(columnName, columnValue.toString());
                 valueMap.put(columnName, columnValue);
             }
             values.add(valueMap);

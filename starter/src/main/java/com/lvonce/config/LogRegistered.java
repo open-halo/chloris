@@ -15,20 +15,20 @@ import java.util.Map;
 @Component
 public class LogRegistered implements CommandLineRunner {
 
-    //    @Autowired
-    //    private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    @Autowired
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     @Override
     public void run(String... args) throws Exception {
-        //        Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
-        //
-        //        log.info("Registered REST Endpoints:");
-        //        handlerMethods.forEach((info, method) -> {
-        //            StringBuilder sb = new StringBuilder();
-        ////            info.getPatternsCondition().getPatterns().forEach(pattern -> sb.append(pattern).append(" "));
-        //            info.getMethodsCondition().getMethods().forEach(httpMethod -> sb.append(httpMethod.name()).append(" "));
-        //            sb.append(method.getMethod().getDeclaringClass().getName()).append("#").append(method.getMethod().getName());
-        //            log.info("{}", sb);
-        //        });
+                Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
+
+                log.info("Registered REST Endpoints:");
+                handlerMethods.forEach((info, method) -> {
+                    StringBuilder sb = new StringBuilder();
+        //            info.getPatternsCondition().getPatterns().forEach(pattern -> sb.append(pattern).append(" "));
+                    info.getMethodsCondition().getMethods().forEach(httpMethod -> sb.append(httpMethod.name()).append(" "));
+                    sb.append(method.getMethod().getDeclaringClass().getName()).append("#").append(method.getMethod().getName());
+                    log.info("{}", sb);
+                });
     }
 }

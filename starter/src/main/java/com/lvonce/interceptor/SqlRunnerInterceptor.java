@@ -22,7 +22,7 @@ public class SqlRunnerInterceptor implements HandlerInterceptor {
 
     private SqlTemplateService sqlTemplateService;
 
-    private EndpointService endpointService;
+    private EndpointService    endpointService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
